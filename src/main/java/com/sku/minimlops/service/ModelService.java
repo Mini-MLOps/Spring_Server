@@ -41,12 +41,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ModelService {
+	private final String BASIC_URL = "http://211.62.99.58:5000";
+
 	private final ModelRepository modelRepository;
 	private final MovieRepository movieRepository;
 	private final EmbeddingVectorRepository embeddingVectorRepository;
 
 	public void trainModel(ModelParameterRequest modelParameterRequest) {
-		String uri = "http://localhost:5000/train";
+		String uri = BASIC_URL + "/train";
 
 		List<MovieDTO> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(
 				modelParameterRequest.getDataStartDate(), modelParameterRequest.getDataEndDate())
@@ -72,7 +74,7 @@ public class ModelService {
 	}
 
 	public void deployModel(Long modelId) {
-		String uri = String.format("http://localhost:5000/%s/deploy", modelId);
+		String uri = String.format(BASIC_URL + "/%s/deploy", modelId);
 
 		Optional<Model> model = modelRepository.findById(modelId);
 		model.ifPresent(m -> {
@@ -105,7 +107,7 @@ public class ModelService {
 	}
 
 	public ResultDetailResponse getResultByUserInput(UserInputRequest userInputRequest) throws JsonProcessingException {
-		String uri = "http://localhost:5000/result";
+		String uri = BASIC_URL + "/result";
 
 		List<EmbeddingVectorDTO> embeddingVectors = embeddingVectorRepository.findAll()
 			.stream()
