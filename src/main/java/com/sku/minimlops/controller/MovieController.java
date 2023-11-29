@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class MovieController {
         return DataResponse.of(movieService.getMoviesByCollectionDate(startDate, endDate, pageable));
     }
 
-    @GetMapping("/{movieId}")
+    @DeleteMapping("/{movieId}")
     public Response deleteMovie(@PathVariable Long movieId) {
         movieService.deleteMovie(movieId);
         return Response.of(true, Code.OK);
