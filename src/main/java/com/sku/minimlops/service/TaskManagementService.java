@@ -21,13 +21,15 @@ public class TaskManagementService {
 	private final TaskMangementRepository taskMangementRepository;
 
 	public void trainOn() {
-		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
-		taskManagement.ifPresent(TaskManagement::trainOn);
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		assert taskManagement != null;
+		taskManagement.trainOn();
 	}
 
 	public void trainOff() {
-		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
-		taskManagement.ifPresent(TaskManagement::trainOff);
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		assert taskManagement != null;
+		taskManagement.trainOff();
 	}
 
 	public void deployOn() {
