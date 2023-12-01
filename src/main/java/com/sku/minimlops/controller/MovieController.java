@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sku.minimlops.exception.Code;
 import com.sku.minimlops.exception.dto.DataResponse;
 import com.sku.minimlops.exception.dto.Response;
+import com.sku.minimlops.model.dto.response.MovieCountResponse;
 import com.sku.minimlops.model.dto.response.MovieResponse;
 import com.sku.minimlops.service.MovieService;
 
@@ -26,19 +27,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieService movieService;
+	private final MovieService movieService;
 
-    @GetMapping
-    public DataResponse<MovieResponse> getMovies(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(sort = {"releaseDate"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        return DataResponse.of(movieService.getMoviesByCollectionDate(startDate, endDate, pageable));
-    }
+	@GetMapping
+	public DataResponse<MovieResponse> getMovies(
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+		@PageableDefault(sort = {"releaseDate"}, direction = Sort.Direction.DESC) Pageable pageable) {
+		return DataResponse.of(movieService.getMoviesByCollectionDate(startDate, endDate, pageable));
+	}
 
-    @DeleteMapping("/{movieId}")
-    public Response deleteMovie(@PathVariable Long movieId) {
-        movieService.deleteMovie(movieId);
-        return Response.of(true, Code.OK);
-    }
+	@GetMapping("/count")
+	public DataResponse<MovieCountResponse> countMovies(
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		return DataResponse.of(movieService.countMoviesByCollectionDate(startDate, endDate));
+	}
+
+	@DeleteMapping("/{movieId}")
+	public Response deleteMovie(@PathVariable Long movieId) {
+		movieService.deleteMovie(movieId);
+		return Response.of(true, Code.OK);
+	}
 }

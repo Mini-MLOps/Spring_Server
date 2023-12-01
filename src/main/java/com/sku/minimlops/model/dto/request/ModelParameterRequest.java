@@ -1,12 +1,14 @@
 package com.sku.minimlops.model.dto.request;
 
+import java.time.LocalDate;
+
 import com.sku.minimlops.model.domain.Model;
 
-import java.time.LocalDate;
 import lombok.Getter;
 
 @Getter
 public class ModelParameterRequest {
+    private String name;
     private LocalDate dataStartDate;
     private LocalDate dataEndDate;
     private int vectorSize;
@@ -17,6 +19,7 @@ public class ModelParameterRequest {
 
     public Model toEntity() {
         return Model.builder()
+            .name(name)
             .dataStartDate(dataStartDate)
             .dataEndDate(dataEndDate)
             .vectorSize(vectorSize)

@@ -13,6 +13,7 @@ import com.sku.minimlops.exception.Code;
 import com.sku.minimlops.exception.dto.DataResponse;
 import com.sku.minimlops.exception.dto.Response;
 import com.sku.minimlops.model.dto.request.ResultRequest;
+import com.sku.minimlops.model.dto.response.UserLogResponse;
 import com.sku.minimlops.service.UserLogService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class UserLogController {
 	}
 
 	@GetMapping
-	public DataResponse getAllUserLogs(
+	public DataResponse<UserLogResponse> getAllUserLogs(
 		@PageableDefault(sort = {"requestDate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 		return DataResponse.of(userLogService.getAllUserLogs(pageable));
 	}

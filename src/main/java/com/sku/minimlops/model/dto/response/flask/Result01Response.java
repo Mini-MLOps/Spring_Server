@@ -1,8 +1,8 @@
-package com.sku.minimlops.model.dto.response.Flask;
+package com.sku.minimlops.model.dto.response.flask;
 
 import java.util.List;
 
-import com.sku.minimlops.model.dto.EmbeddingVectorDTO;
+import com.sku.minimlops.model.dto.Word2vecEmb01DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultResponse {
+public class Result01Response {
 	private String input;
-	private List<EmbeddingVectorDTO> embeddingVector;
+	private List<Word2vecEmb01DTO> output;
 }

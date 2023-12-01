@@ -1,5 +1,7 @@
 package com.sku.minimlops.model.dto.response;
 
+import java.util.List;
+
 import com.sku.minimlops.model.dto.ModelDTO;
 
 import lombok.AllArgsConstructor;
@@ -11,6 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModelResponse {
-	private ModelDTO model;
+public class ModelListResponse {
+    private List<ModelDTO> model;
+    private int totalPages;
+    private int totalElements;
+    private boolean first;
+    private boolean last;
 }

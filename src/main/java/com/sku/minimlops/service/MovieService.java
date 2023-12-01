@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sku.minimlops.model.domain.Movie;
 import com.sku.minimlops.model.dto.MovieDTO;
+import com.sku.minimlops.model.dto.response.MovieCountResponse;
 import com.sku.minimlops.model.dto.response.MovieResponse;
 import com.sku.minimlops.repository.MovieRepository;
 
@@ -21,7 +22,8 @@ public class MovieService {
 	private final MovieRepository movieRepository;
 
 	public MovieResponse getMoviesByCollectionDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-		Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate, pageable);
+		Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate,
+			pageable);
 		return MovieResponse.builder()
 			.movie(movies.getContent().stream().map(MovieDTO::fromMovie).toList())
 			.totalPages(movies.getTotalPages())
@@ -34,5 +36,11 @@ public class MovieService {
 	@Transactional
 	public void deleteMovie(Long movieId) {
 		movieRepository.deleteById(movieId);
+	}
+
+	public MovieCountResponse countMoviesByCollectionDate(LocalDate startDate, LocalDate endDate) {
+		return MovieCountResponse.builder()
+			.count(movieRepository.countAllByCollectionDateBetween(startDate, endDate))
+			.build();
 	}
 }

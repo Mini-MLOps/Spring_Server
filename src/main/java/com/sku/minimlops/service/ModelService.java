@@ -18,22 +18,28 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sku.minimlops.model.domain.Model;
-import com.sku.minimlops.model.dto.EmbeddingVectorDTO;
+import com.sku.minimlops.model.domain.TableName;
+import com.sku.minimlops.model.domain.TaskManagement;
 import com.sku.minimlops.model.dto.ModelDTO;
 import com.sku.minimlops.model.dto.MovieDTO;
 import com.sku.minimlops.model.dto.ResultDTO;
 import com.sku.minimlops.model.dto.ResultDetailDTO;
 import com.sku.minimlops.model.dto.UserLogDTO;
+import com.sku.minimlops.model.dto.Word2vecEmb01DTO;
+import com.sku.minimlops.model.dto.Word2vecEmb02DTO;
 import com.sku.minimlops.model.dto.request.ModelParameterRequest;
 import com.sku.minimlops.model.dto.request.UserInputRequest;
-import com.sku.minimlops.model.dto.response.Flask.ModelDeployResponse;
-import com.sku.minimlops.model.dto.response.Flask.ModelTrainResponse;
-import com.sku.minimlops.model.dto.response.Flask.ResultResponse;
-import com.sku.minimlops.model.dto.response.ModelResponse;
+import com.sku.minimlops.model.dto.response.ModelListResponse;
 import com.sku.minimlops.model.dto.response.ResultDetailResponse;
-import com.sku.minimlops.repository.EmbeddingVectorRepository;
+import com.sku.minimlops.model.dto.response.flask.ModelDeployResponse;
+import com.sku.minimlops.model.dto.response.flask.ModelTrainResponse;
+import com.sku.minimlops.model.dto.response.flask.Result01Response;
+import com.sku.minimlops.model.dto.response.flask.Result02Response;
 import com.sku.minimlops.repository.ModelRepository;
 import com.sku.minimlops.repository.MovieRepository;
+import com.sku.minimlops.repository.TaskMangementRepository;
+import com.sku.minimlops.repository.Word2vecEmb01Repository;
+import com.sku.minimlops.repository.Word2vecEmb02Repository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,20 +47,21 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ModelService {
-	private final String BASIC_URL = "http://211.62.99.58:5020";
+	private final String BASE_URL = "http://211.62.99.58:5020";
 
 	private final ModelRepository modelRepository;
 	private final MovieRepository movieRepository;
-	private final EmbeddingVectorRepository embeddingVectorRepository;
+	private final TaskMangementRepository taskMangementRepository;
+	private final Word2vecEmb01Repository word2vecEmb01Repository;
+	private final Word2vecEmb02Repository word2vecEmb02Repository;
 
 	public void trainModel(ModelParameterRequest modelParameterRequest) {
-		String uri = BASIC_URL + "/train";
+		String uri = BASE_URL + "/train";
 
 		List<MovieDTO> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(
 				modelParameterRequest.getDataStartDate(), modelParameterRequest.getDataEndDate())
 			.stream().map(MovieDTO::fromMovie).toList();
 		ModelTrainResponse modelTrainResponse = ModelTrainResponse.builder()
-			.modelId(modelRepository.getAutoIncrementValue())
 			.parameter(modelParameterRequest)
 			.movie(movies)
 			.build();
@@ -74,14 +81,17 @@ public class ModelService {
 	}
 
 	public void deployModel(Long modelId) {
-		String uri = String.format(BASIC_URL + "/%s/deploy", modelId);
+		String uri = String.format(BASE_URL + "/%s/deploy", modelId);
 
+		TableName nextTable = taskMangementRepository.findAll().get(0).nextTable();
 		Optional<Model> model = modelRepository.findById(modelId);
 		model.ifPresent(m -> {
 			List<MovieDTO> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(
 					m.getDataStartDate(), m.getDataEndDate())
 				.stream().map(MovieDTO::fromMovie).toList();
 			ModelDeployResponse modelDeployResponse = ModelDeployResponse.builder()
+				.modelName(m.getName())
+				.tableName(nextTable)
 				.movie(movies)
 				.build();
 
@@ -95,9 +105,9 @@ public class ModelService {
 		});
 	}
 
-	public ModelResponse getAllModels(Pageable pageable) {
+	public ModelListResponse getAllModels(Pageable pageable) {
 		Page<Model> models = modelRepository.findAll(pageable);
-		return ModelResponse.builder()
+		return ModelListResponse.builder()
 			.model(models.getContent().stream().map(ModelDTO::fromModel).toList())
 			.totalPages(models.getTotalPages())
 			.totalElements((int)models.getTotalElements())
@@ -107,38 +117,73 @@ public class ModelService {
 	}
 
 	public ResultDetailResponse getResultByUserInput(UserInputRequest userInputRequest) throws JsonProcessingException {
-		String uri = BASIC_URL + "/result";
+		String uri = BASE_URL + "/result";
 
-		List<EmbeddingVectorDTO> embeddingVectors = embeddingVectorRepository.findAll()
-			.stream()
-			.map(EmbeddingVectorDTO::fromEmbeddingVector)
-			.toList();
-		ResultResponse resultResponse = ResultResponse.builder()
-			.input(userInputRequest.getInput())
-			.embeddingVector(embeddingVectors)
-			.build();
+		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
+		if (taskManagement.getCurrentTable().equals(TableName.WORD2VEC_EMB_01)) {
+			List<Word2vecEmb01DTO> vectors = word2vecEmb01Repository.findAll()
+				.stream()
+				.map(Word2vecEmb01DTO::fromWord2vecEmb)
+				.toList();
+			Result01Response resultResponse = Result01Response.builder()
+				.input(userInputRequest.getInput())
+				.output(vectors)
+				.build();
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 
-		HttpEntity<ResultResponse> request = new HttpEntity<>(resultResponse, headers);
+			HttpEntity<Result01Response> request = new HttpEntity<>(resultResponse, headers);
 
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
 
-		String jsonResponse = responseEntity.getBody();
-		ObjectMapper objectMapper = new ObjectMapper();
+			String jsonResponse = responseEntity.getBody();
+			ObjectMapper objectMapper = new ObjectMapper();
 
-		List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
-		UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
-		for (ResultDTO output : userLogDTO.getOutput()) {
-			movieRepository.findById(output.getMovieId())
-				.ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
-					.movie(MovieDTO.fromMovie(movie))
-					.similarity(output.getSimilarity())
-					.build()));
+			List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
+			UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
+			for (ResultDTO output : userLogDTO.getOutput()) {
+				movieRepository.findById(output.getMovieId())
+					.ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
+						.movie(MovieDTO.fromMovie(movie))
+						.similarity(output.getSimilarity())
+						.build()));
+			}
+
+			return ResultDetailResponse.builder().result(resultDetailDTOS).build();
+		} else {
+			List<Word2vecEmb02DTO> vectors = word2vecEmb02Repository.findAll()
+				.stream()
+				.map(Word2vecEmb02DTO::fromWord2vecEmb)
+				.toList();
+			Result02Response resultResponse = Result02Response.builder()
+				.input(userInputRequest.getInput())
+				.output(vectors)
+				.build();
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<Result02Response> request = new HttpEntity<>(resultResponse, headers);
+
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+
+			String jsonResponse = responseEntity.getBody();
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
+			UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
+			for (ResultDTO output : userLogDTO.getOutput()) {
+				movieRepository.findById(output.getMovieId())
+					.ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
+						.movie(MovieDTO.fromMovie(movie))
+						.similarity(output.getSimilarity())
+						.build()));
+			}
+
+			return ResultDetailResponse.builder().result(resultDetailDTOS).build();
 		}
-
-		return ResultDetailResponse.builder().result(resultDetailDTOS).build();
 	}
 }

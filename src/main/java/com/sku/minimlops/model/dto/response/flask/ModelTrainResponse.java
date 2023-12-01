@@ -1,8 +1,9 @@
-package com.sku.minimlops.model.dto.response.Flask;
+package com.sku.minimlops.model.dto.response.flask;
 
 import java.util.List;
 
 import com.sku.minimlops.model.dto.MovieDTO;
+import com.sku.minimlops.model.dto.request.ModelParameterRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModelDeployResponse {
+public class ModelTrainResponse {
+    private Long modelId;
+    private ModelParameterRequest parameter;
     private List<MovieDTO> movie;
 }

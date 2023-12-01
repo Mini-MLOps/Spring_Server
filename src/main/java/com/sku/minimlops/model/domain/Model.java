@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -33,6 +34,8 @@ public class Model {
     @Column(name = "model_id")
     private Long id;
 
+    private String name;
+
     private LocalDate dataStartDate;
 
     private LocalDate dataEndDate;
@@ -50,6 +53,6 @@ public class Model {
     @CreatedDate
     private LocalDateTime creationDate;
 
-    @OneToMany(mappedBy = "model", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "model", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EmbeddingVector> embeddingVectors = new ArrayList<>();
 }

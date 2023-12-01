@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,9 +37,12 @@ public class Movie {
 
 	private LocalDate collectionDate;
 
-	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
-	private List<EmbeddingVector> embeddingVectors = new ArrayList<>();
+	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Word2vecEmb01> word2vecEmb01s = new ArrayList<>();
 
-	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Word2vecEmb02> word2vecEmb02s = new ArrayList<>();
+
+	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Result> results = new ArrayList<>();
 }
