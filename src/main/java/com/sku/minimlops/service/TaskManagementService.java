@@ -1,5 +1,7 @@
 package com.sku.minimlops.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.sku.minimlops.model.domain.Model;
@@ -19,56 +21,65 @@ public class TaskManagementService {
 	private final TaskMangementRepository taskMangementRepository;
 
 	public void trainOn() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		taskManagement.trainOn();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::trainOn);
 	}
 
 	public void trainOff() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		taskManagement.trainOff();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::trainOff);
 	}
 
 	public void deployOn() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		taskManagement.deployOn();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::deployOn);
 	}
 
 	public void deployOff(Long modelId) {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
 		changeCurrentModel(modelId);
 		switchCurrentTable();
-		taskManagement.deployOff();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::deployOff);
 	}
 
 	public void changeCurrentModel(Long modelId) {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
 		Model model = modelRepository.findById(modelId).orElse(null);
-		taskManagement.changeCurrentModel(model);
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(tm -> tm.changeCurrentModel(model));
 	}
 
 	public void switchCurrentTable() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		taskManagement.switchCurrentTable();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::switchCurrentTable);
 	}
 
 	public TaskStatusResponse isTrain() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		return TaskStatusResponse.builder()
-			.status(taskManagement.isTrain())
-			.build();
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		if (taskManagement != null) {
+			return TaskStatusResponse.builder()
+				.status(taskManagement.isTrain())
+				.build();
+		}
+		return null;
 	}
 
 	public TaskStatusResponse isDeploy() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		return TaskStatusResponse.builder()
-			.status(taskManagement.isDeploy())
-			.build();
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		if (taskManagement != null) {
+			return TaskStatusResponse.builder()
+				.status(taskManagement.isDeploy())
+				.build();
+		}
+		return null;
 	}
 
 	public ModelResponse getCurrentModel() {
-		TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
-		return ModelResponse.builder()
-			.model(ModelDTO.fromModel(taskManagement.getCurrentModel()))
-			.build();
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		if (taskManagement != null) {
+			return ModelResponse.builder()
+				.model(ModelDTO.fromModel(taskManagement.getCurrentModel()))
+				.build();
+		}
+		return null;
 	}
 }

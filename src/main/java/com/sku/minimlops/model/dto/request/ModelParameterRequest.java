@@ -8,7 +8,6 @@ import lombok.Getter;
 
 @Getter
 public class ModelParameterRequest {
-    private String name;
     private LocalDate dataStartDate;
     private LocalDate dataEndDate;
     private int vectorSize;
@@ -19,7 +18,6 @@ public class ModelParameterRequest {
 
     public Model toEntity() {
         return Model.builder()
-            .name(name)
             .dataStartDate(dataStartDate)
             .dataEndDate(dataEndDate)
             .vectorSize(vectorSize)
