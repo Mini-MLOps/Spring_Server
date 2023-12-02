@@ -47,7 +47,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ModelService {
-    private final String BASE_URL = "http://localhost:5000";
+    private final String BASE_URL = "http://localhost:5020";
 
     private final ModelRepository modelRepository;
     private final MovieRepository movieRepository;
