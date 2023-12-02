@@ -51,18 +51,18 @@ public class TaskManagement {
 	}
 
 	public void switchCurrentTable() {
-		if (this.currentTable == TableName.WORD2VEC_EMB_01) {
-			this.currentTable = TableName.WORD2VEC_EMB_02;
+		if (this.currentTable == TableName.word2vec_emb_01) {
+			this.currentTable = TableName.word2vec_emb_02;
 		} else {
-			this.currentTable = TableName.WORD2VEC_EMB_01;
+			this.currentTable = TableName.word2vec_emb_01;
 		}
 	}
 
 	public TableName nextTable() {
-		if (this.currentTable == TableName.WORD2VEC_EMB_01) {
-			return TableName.WORD2VEC_EMB_02;
+		if (this.currentTable == TableName.word2vec_emb_01) {
+			return TableName.word2vec_emb_02;
 		} else {
-			return TableName.WORD2VEC_EMB_01;
+			return TableName.word2vec_emb_01;
 		}
 	}
 }

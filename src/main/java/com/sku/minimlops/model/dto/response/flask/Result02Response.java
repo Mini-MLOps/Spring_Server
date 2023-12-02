@@ -15,5 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Result02Response {
 	private String input;
-	private List<Word2vecEmb02DTO> output;
+	private List<Word2vecEmb02DTO> embeddingVector;
+	private String modelName;
 }
