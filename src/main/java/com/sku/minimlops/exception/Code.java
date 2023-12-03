@@ -19,7 +19,9 @@ public enum Code {
     NOT_FOUND(404, HttpStatus.NOT_FOUND, "Resource not found"),
 
     INTERNAL_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Data access error");
+    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Data access error"),
+
+    UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "User unauthorized");
 
     private final Integer code;
     private final HttpStatus httpStatus;
