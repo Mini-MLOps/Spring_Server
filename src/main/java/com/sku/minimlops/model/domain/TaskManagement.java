@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Entity
@@ -22,6 +23,8 @@ public class TaskManagement {
 	private boolean train;
 
 	private boolean deploy;
+
+	private LocalDateTime deployTime;
 
 	@OneToOne
 	@JoinColumn(name = "model_id")
@@ -44,6 +47,7 @@ public class TaskManagement {
 
 	public void deployOff() {
 		this.deploy = false;
+		this.deployTime = LocalDateTime.now();
 	}
 
 	public void changeCurrentModel(Model model) {
