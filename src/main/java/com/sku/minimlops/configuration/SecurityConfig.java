@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 .requestMatchers("/", "api/users/login", "api/users/join").permitAll()
-                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui/index.html")
                 .permitAll()   // Swagger UI 예외 추가
                 .anyRequest().authenticated()
                 .and()

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieCountResponse {
-	private int totalElements;
+public class MovieDailyCountResponse {
+    List<MovieDailyDTO> count;
 }

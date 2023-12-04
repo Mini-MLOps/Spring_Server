@@ -1,6 +1,8 @@
 package com.sku.minimlops.controller;
 
+import com.sku.minimlops.exception.Code;
 import com.sku.minimlops.exception.dto.DataResponse;
+import com.sku.minimlops.exception.dto.Response;
 import com.sku.minimlops.model.dto.request.UserJoinRequest;
 import com.sku.minimlops.model.dto.request.UserLoginRequest;
 import com.sku.minimlops.service.UserService;
@@ -19,9 +21,9 @@ public class UserController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입", description = "회원가입합니다.")
-    public DataResponse<Object> join(@RequestBody UserJoinRequest userJoinRequest) {
+    public Response join(@RequestBody UserJoinRequest userJoinRequest) {
         userService.join(userJoinRequest.getUsername(), userJoinRequest.getName(), userJoinRequest.getPassword());
-        return DataResponse.empty();
+        return Response.of(true, Code.OK);
     }
 
     @PostMapping("/login")
@@ -32,19 +34,19 @@ public class UserController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "로그아웃합니다.")
-    public DataResponse<Object> logout(@RequestHeader("Authorization") String authorization, Authentication authentication) {
+    public Response logout(@RequestHeader("Authorization") String authorization, Authentication authentication) {
         String username = authentication.getName();
         String token = authorization.split(" ")[1];
         userService.logout(username, token);
-        return DataResponse.empty();
+        return Response.of(true, Code.OK);
     }
 
     @DeleteMapping("/withdrawal")
     @Operation(summary = "회원탈퇴", description = "회원을 탈퇴합니다.")
-    public DataResponse<Object> deleteUser(Authentication authentication) {
+    public Response deleteUser(Authentication authentication) {
         String username = authentication.getName();
         userService.deleteUser(username);
-        return DataResponse.empty();
+        return Response.of(true, Code.OK);
     }
 
     @GetMapping("/name")

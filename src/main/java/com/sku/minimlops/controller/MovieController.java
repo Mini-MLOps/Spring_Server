@@ -1,5 +1,6 @@
 package com.sku.minimlops.controller;
 
+import com.sku.minimlops.model.dto.response.MovieDailyCountResponse;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Pageable;

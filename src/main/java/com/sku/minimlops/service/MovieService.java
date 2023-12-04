@@ -19,28 +19,29 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MovieService {
-	private final MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
-	public MovieResponse getMoviesByCollectionDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-		Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate,
-			pageable);
-		return MovieResponse.builder()
-			.movie(movies.getContent().stream().map(MovieDTO::fromMovie).toList())
-			.totalPages(movies.getTotalPages())
-			.totalElements((int)movies.getTotalElements())
-			.first(movies.isFirst())
-			.last(movies.isLast())
-			.build();
-	}
+    public MovieResponse getMoviesByCollectionDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate,
+                pageable);
+        return MovieResponse.builder()
+                .count(movieRepository.getCountByCollectionDateInRange(startDate, endDate))
+                .movie(movies.getContent().stream().map(MovieDTO::fromMovie).toList())
+                .totalPages(movies.getTotalPages())
+                .totalElements((int) movies.getTotalElements())
+                .first(movies.isFirst())
+                .last(movies.isLast())
+                .build();
+    }
 
-	@Transactional
-	public void deleteMovie(Long movieId) {
-		movieRepository.deleteById(movieId);
-	}
+    @Transactional
+    public void deleteMovie(Long movieId) {
+        movieRepository.deleteById(movieId);
+    }
 
-	public MovieCountResponse countMoviesByCollectionDate(LocalDate startDate, LocalDate endDate) {
-		return MovieCountResponse.builder()
-			.count(movieRepository.countAllByCollectionDateBetween(startDate, endDate))
-			.build();
-	}
+    public MovieCountResponse countMoviesByCollectionDate(LocalDate startDate, LocalDate endDate) {
+        return MovieCountResponse.builder()
+                .totalElements(movieRepository.countAllByCollectionDateBetween(startDate, endDate))
+                .build();
+    }
 }
