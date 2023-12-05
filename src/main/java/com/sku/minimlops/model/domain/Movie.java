@@ -53,5 +53,8 @@ public class Movie {
 	private List<Word2vecEmb02> word2vecEmb02s = new ArrayList<>();
 
 	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<GPTEmb01> gptEmb01s = new ArrayList<>();
+
+	@OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Result> results = new ArrayList<>();
 }
