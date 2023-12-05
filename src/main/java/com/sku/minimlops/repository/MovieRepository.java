@@ -16,10 +16,10 @@ import com.sku.minimlops.model.domain.Movie;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-	Page<Movie> findByCollectionDateBetweenOrderByCollectionDateDesc(LocalDate startDate, LocalDate endDate,
+	Page<Movie> findByReleaseDateBetweenOrderByReleaseDateDesc(LocalDate startDate, LocalDate endDate,
 		Pageable pageable);
 
-	List<Movie> findByCollectionDateBetweenOrderByCollectionDateDesc(LocalDate startDate, LocalDate endDate);
+	List<Movie> findByReleaseDateBetweenOrderByReleaseDateDesc(LocalDate startDate, LocalDate endDate);
 
 	int countAllByCollectionDateBetween(LocalDate startDate, LocalDate endDate);
 

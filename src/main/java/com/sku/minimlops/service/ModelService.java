@@ -58,7 +58,7 @@ public class ModelService {
     public void trainModel(ModelParameterRequest modelParameterRequest) {
         String uri = BASE_URL + "/train";
 
-        List<MovieDTO> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(
+        List<MovieDTO> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(
                         modelParameterRequest.getDataStartDate(), modelParameterRequest.getDataEndDate())
                 .stream().map(MovieDTO::fromMovie).toList();
         ModelTrainResponse modelTrainResponse = ModelTrainResponse.builder()
@@ -86,7 +86,7 @@ public class ModelService {
         TableName nextTable = taskMangementRepository.findAll().get(0).nextTable();
         Optional<Model> model = modelRepository.findById(modelId);
         model.ifPresent(m -> {
-            List<MovieDTO> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(
+            List<MovieDTO> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(
                             m.getDataStartDate(), m.getDataEndDate())
                     .stream().map(MovieDTO::fromMovie).toList();
             ModelDeployResponse modelDeployResponse = ModelDeployResponse.builder()
