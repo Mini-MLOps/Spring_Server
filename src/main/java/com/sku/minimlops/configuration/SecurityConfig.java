@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,20 +26,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
                 .httpBasic().disable()
                 .csrf().disable()
                 .cors().and()
-                .authorizeHttpRequests()
-                .requestMatchers("/", "api/users/login", "api/users/join").permitAll()
-                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui/index.html")
-                .permitAll()   // Swagger UI 예외 추가
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement().sessionCreationPolicy(STATELESS) // 세션 사용하지 않음
-                .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // JWT 적용
-                .build();
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/", "api/users/login", "api/users/join").permitAll()
+                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                        "/swagger-ui/index.html").permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // JWT 적용
+
+        return http.build();
     }
 }

@@ -1,5 +1,6 @@
 package com.sku.minimlops.controller;
 
+import com.sku.minimlops.model.dto.response.UserLogCountResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -34,5 +35,10 @@ public class UserLogController {
 	public DataResponse<UserLogResponse> getAllUserLogs(
 		@PageableDefault(sort = {"requestDate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 		return DataResponse.of(userLogService.getAllUserLogs(pageable));
+	}
+
+	@GetMapping("/count")
+	public DataResponse<UserLogCountResponse> countUserLogs() {
+		return DataResponse.of(userLogService.countUserLogs());
 	}
 }

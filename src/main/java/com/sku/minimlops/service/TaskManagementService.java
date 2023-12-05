@@ -1,5 +1,6 @@
 package com.sku.minimlops.service;
 
+import com.sku.minimlops.model.dto.response.DeployTimeResponse;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -24,16 +25,14 @@ public class TaskManagementService {
 
 	@Transactional
 	public void trainOn() {
-		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
-		assert taskManagement != null;
-		taskManagement.trainOn();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::trainOn);
 	}
 
 	@Transactional
 	public void trainOff() {
-		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
-		assert taskManagement != null;
-		taskManagement.trainOff();
+		Optional<TaskManagement> taskManagement = taskMangementRepository.findById(1L);
+		taskManagement.ifPresent(TaskManagement::trainOff);
 	}
 
 	@Transactional
@@ -89,6 +88,16 @@ public class TaskManagementService {
 			return ModelResponse.builder()
 				.model(ModelDTO.fromModel(taskManagement.getCurrentModel()))
 				.build();
+		}
+		return null;
+	}
+
+	public DeployTimeResponse getLastDeployTime() {
+		TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+		if (taskManagement != null) {
+			return DeployTimeResponse.builder()
+					.lastDeployTime(taskManagement.getDeployTime())
+					.build();
 		}
 		return null;
 	}

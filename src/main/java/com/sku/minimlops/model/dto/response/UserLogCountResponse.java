@@ -1,7 +1,5 @@
 package com.sku.minimlops.model.dto.response;
 
-import com.sku.minimlops.model.dto.MovieDailyDTO;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieDailyCountResponse {
-    List<MovieDailyDTO> dailyElements;
+public class UserLogCountResponse {
+    private int totalElements;
+    private int todayElements;
 }
