@@ -60,7 +60,6 @@ jobs:
               docker stop "$existing_container" || true
               docker rm "$existing_container" || true
             fi
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
             docker run -d --log-driver=syslog -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
             docker rm $(docker ps --filter 'status=exited' -a -q)
             docker image prune -a -f

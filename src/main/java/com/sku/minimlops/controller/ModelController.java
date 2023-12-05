@@ -61,7 +61,7 @@ public class ModelController {
 		return DataResponse.of(modelService.getAllModels(pageable));
 	}
 
-	@GetMapping("/result/word2vec")
+	@PostMapping("/result/word2vec")
 	public DataResponse<ResultDetailResponse> getResult(@RequestBody UserInputRequest userInputRequest) throws JsonProcessingException {
 		return DataResponse.of(modelService.getResultByUserInput(userInputRequest));
 	}
