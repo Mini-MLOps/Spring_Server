@@ -2,6 +2,7 @@ package com.sku.minimlops.service;
 
 import com.sku.minimlops.model.dto.response.UserLogCountResponse;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,9 +56,12 @@ public class UserLogService {
     }
 
     public UserLogCountResponse countUserLogs() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(23, 59, 59);
         return UserLogCountResponse.builder()
                 .totalElements(userLogRepository.countAllBy())
-                .todayElements(userLogRepository.countAllByRequestDate(LocalDate.now()))
+                .todayElements(userLogRepository.countAllByRequestDateBetween(startOfDay, endOfDay))
                 .build();
     }
 }
