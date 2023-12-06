@@ -1,5 +1,6 @@
 package com.sku.minimlops.controller;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,16 +45,16 @@ public class ModelController {
 		modelService.saveModel(modelParameterRequest);
 	}
 
-	@PostMapping("/{modelId}/deploy")
-	public Response deployModel(@PathVariable Long modelId) {
+	@PostMapping("/deploy")
+	public Response deployModel(@RequestParam Long id) {
 		taskManagementService.deployOn();
-		modelService.deployModel(modelId);
+		modelService.deployModel(id);
 		return Response.of(true, Code.OK);
 	}
 
-	@PostMapping("/{modelId}/deploy-complete")
-	public void handleDeployingComplete(@PathVariable Long modelId) {
-		taskManagementService.deployOff(modelId);
+	@PostMapping("/deploy-complete")
+	public void handleDeployingComplete(@RequestParam Long id) {
+		taskManagementService.deployOff(id);
 	}
 
 	@GetMapping
