@@ -22,7 +22,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
 
     public MovieResponse getMoviesByCollectionDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Page<Movie> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(startDate, endDate,
+        Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate,
                 pageable);
         return MovieResponse.builder()
                 .count(movieRepository.getCountByCollectionDateInRange(startDate, endDate))

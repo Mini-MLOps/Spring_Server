@@ -21,6 +21,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
 	List<Movie> findByReleaseDateBetweenOrderByReleaseDateDesc(LocalDate startDate, LocalDate endDate);
 
+	Page<Movie> findByCollectionDateBetweenOrderByCollectionDateDesc(LocalDate startDate, LocalDate endDate,
+															   Pageable pageable);
+
+	List<Movie> findByCollectionDateBetweenOrderByCollectionDateDesc(LocalDate startDate, LocalDate endDate);
+
 	int countAllByCollectionDateBetween(LocalDate startDate, LocalDate endDate);
 
 	@Query("SELECT new com.sku.minimlops.model.dto.MovieDailyDTO(e.collectionDate, COUNT(e)) " +
