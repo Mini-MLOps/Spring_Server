@@ -41,7 +41,7 @@ public class MovieService {
 
     public MovieCountResponse countMoviesByCollectionDate(LocalDate startDate, LocalDate endDate) {
         return MovieCountResponse.builder()
-                .totalElements(movieRepository.countAllByCollectionDateBetween(startDate, endDate))
+                .totalElements(movieRepository.countAllByReleaseDateBetween(startDate, endDate))
                 .build();
     }
 }
