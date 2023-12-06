@@ -35,6 +35,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/api/users/login", "/api/users/join").permitAll()
                                 .requestMatchers("/api/models/train-complete", "/api/models/deploy-complete").permitAll()
+                                .requestMatchers("/api/user-logs").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(STATELESS))
