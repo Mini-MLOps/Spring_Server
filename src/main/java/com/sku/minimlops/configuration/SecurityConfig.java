@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("api/users/login", "api/users/join").permitAll()
-                                .requestMatchers("**/train-complete", "**/deploy-complete").permitAll()
+                                .requestMatchers("/api/users/login", "/api/users/join").permitAll()
+                                .requestMatchers("/**/train-complete", "/**/deploy-complete").permitAll()
                                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
                                         "/swagger-ui/index.html").permitAll()
                                 .anyRequest().authenticated())
