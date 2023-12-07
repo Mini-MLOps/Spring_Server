@@ -1,5 +1,7 @@
 package com.sku.minimlops.service;
 
+import com.sku.minimlops.model.dto.response.MovieChartResponse;
+import com.sku.minimlops.model.dto.response.MovieTodayCountResponse;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
@@ -22,10 +24,8 @@ public class MovieService {
     private final MovieRepository movieRepository;
 
     public MovieResponse getMoviesByCollectionDate(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate,
-                pageable);
+        Page<Movie> movies = movieRepository.findByCollectionDateBetweenOrderByCollectionDateDesc(startDate, endDate, pageable);
         return MovieResponse.builder()
-                .count(movieRepository.getCountByCollectionDateInRange(startDate, endDate))
                 .movie(movies.getContent().stream().map(MovieDTO::fromMovie).toList())
                 .totalPages(movies.getTotalPages())
                 .totalElements((int) movies.getTotalElements())
@@ -34,14 +34,28 @@ public class MovieService {
                 .build();
     }
 
+    public MovieChartResponse countMoviesDaily(LocalDate startDate, LocalDate endDate) {
+        return MovieChartResponse.builder()
+                .id("Data")
+                .color("hsl(500, 70%, 50%)")
+                .data(movieRepository.getCountByCollectionDateInRange(startDate, endDate))
+                .build();
+    }
+
+    public MovieTodayCountResponse countMoviesByCollectionDateToday() {
+        return MovieTodayCountResponse.builder()
+                .totalElements(movieRepository.countMoviesByCollectionDateToday(LocalDate.now()))
+                .build();
+    }
+
     @Transactional
     public void deleteMovie(Long movieId) {
         movieRepository.deleteById(movieId);
     }
 
-    public MovieCountResponse countMoviesByCollectionDate(LocalDate startDate, LocalDate endDate) {
+    public MovieCountResponse countMoviesByReleaseDate(LocalDate startDate, LocalDate endDate) {
         return MovieCountResponse.builder()
-                .totalElements(movieRepository.countAllByReleaseDateBetween(startDate, endDate))
+                .totalElements(movieRepository.countMoviesByReleaseDateBetween(startDate, endDate))
                 .build();
     }
 }

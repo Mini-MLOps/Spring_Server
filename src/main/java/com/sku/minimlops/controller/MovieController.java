@@ -1,6 +1,7 @@
 package com.sku.minimlops.controller;
 
-import com.sku.minimlops.model.dto.response.MovieDailyCountResponse;
+import com.sku.minimlops.model.dto.response.MovieChartResponse;
+import com.sku.minimlops.model.dto.response.MovieTodayCountResponse;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Pageable;
@@ -38,16 +39,28 @@ public class MovieController {
 		return DataResponse.of(movieService.getMoviesByCollectionDate(startDate, endDate, pageable));
 	}
 
+	@GetMapping("/chart")
+	public DataResponse<MovieChartResponse> countMoviesDaily(
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		return DataResponse.of(movieService.countMoviesDaily(startDate, endDate));
+	}
+
 	@GetMapping("/count")
 	public DataResponse<MovieCountResponse> countMovies(
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		return DataResponse.of(movieService.countMoviesByCollectionDate(startDate, endDate));
+		return DataResponse.of(movieService.countMoviesByReleaseDate(startDate, endDate));
 	}
 
-	@DeleteMapping("/{movieId}")
-	public Response deleteMovie(@PathVariable Long movieId) {
-		movieService.deleteMovie(movieId);
+	@GetMapping("/count/today")
+	public DataResponse<MovieTodayCountResponse> countTodayMovies() {
+		return DataResponse.of(movieService.countMoviesByCollectionDateToday());
+	}
+
+	@DeleteMapping
+	public Response deleteMovie(@RequestParam Long id) {
+		movieService.deleteMovie(id);
 		return Response.of(true, Code.OK);
 	}
 }

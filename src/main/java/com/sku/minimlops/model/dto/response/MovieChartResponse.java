@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieDailyCountResponse {
-    List<MovieDailyDTO> dailyElements;
+public class MovieChartResponse {
+    private String id;
+    private String color;
+    private List<MovieDailyDTO> data;
 }
