@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Result01Response {
+public class ResultWord2Vec01Response {
 	private String input;
 	private List<Word2vecEmb01DTO> embeddingVector;
 	private String modelName;

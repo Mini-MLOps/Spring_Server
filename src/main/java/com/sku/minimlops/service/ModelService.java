@@ -1,5 +1,9 @@
 package com.sku.minimlops.service;
 
+import com.sku.minimlops.model.domain.Movie;
+import com.sku.minimlops.model.dto.GptEmb01DTO;
+import com.sku.minimlops.model.dto.response.flask.ResultGpt01Response;
+import com.sku.minimlops.repository.GptEmb01Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +37,8 @@ import com.sku.minimlops.model.dto.response.ModelListResponse;
 import com.sku.minimlops.model.dto.response.ResultDetailResponse;
 import com.sku.minimlops.model.dto.response.flask.ModelDeployResponse;
 import com.sku.minimlops.model.dto.response.flask.ModelTrainResponse;
-import com.sku.minimlops.model.dto.response.flask.Result01Response;
-import com.sku.minimlops.model.dto.response.flask.Result02Response;
+import com.sku.minimlops.model.dto.response.flask.ResultWord2Vec01Response;
+import com.sku.minimlops.model.dto.response.flask.ResultWord2Vec02Response;
 import com.sku.minimlops.repository.ModelRepository;
 import com.sku.minimlops.repository.MovieRepository;
 import com.sku.minimlops.repository.TaskMangementRepository;
@@ -47,13 +51,15 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ModelService {
-    private final String BASE_URL = "http://211.62.99.58:5020";
+    //    private final String BASE_URL = "http://211.62.99.58:5020";
+    private final String BASE_URL = "http://localhost:5000";
 
     private final ModelRepository modelRepository;
     private final MovieRepository movieRepository;
     private final TaskMangementRepository taskMangementRepository;
     private final Word2vecEmb01Repository word2vecEmb01Repository;
     private final Word2vecEmb02Repository word2vecEmb02Repository;
+    private final GptEmb01Repository gptEmb01Repository;
 
     public void trainModel(ModelParameterRequest modelParameterRequest) {
         String uri = BASE_URL + "/train";
@@ -116,7 +122,7 @@ public class ModelService {
                 .build();
     }
 
-    public ResultDetailResponse getResultByUserInput(UserInputRequest userInputRequest) throws JsonProcessingException {
+    public ResultDetailResponse getResultWord2Vec(UserInputRequest userInputRequest) throws JsonProcessingException {
         String uri = BASE_URL + "/result";
 
         TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
@@ -126,7 +132,7 @@ public class ModelService {
                     .stream()
                     .map(Word2vecEmb01DTO::fromWord2vecEmb)
                     .toList();
-            Result01Response resultResponse = Result01Response.builder()
+            ResultWord2Vec01Response resultResponse = ResultWord2Vec01Response.builder()
                     .input(userInputRequest.getInput())
                     .embeddingVector(vectors)
                     .modelName(modelName)
@@ -135,7 +141,7 @@ public class ModelService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<Result01Response> request = new HttpEntity<>(resultResponse, headers);
+            HttpEntity<ResultWord2Vec01Response> request = new HttpEntity<>(resultResponse, headers);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
@@ -159,7 +165,7 @@ public class ModelService {
                     .stream()
                     .map(Word2vecEmb02DTO::fromWord2vecEmb)
                     .toList();
-            Result02Response resultResponse = Result02Response.builder()
+            ResultWord2Vec02Response resultResponse = ResultWord2Vec02Response.builder()
                     .input(userInputRequest.getInput())
                     .embeddingVector(vectors)
                     .modelName(modelName)
@@ -168,7 +174,7 @@ public class ModelService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<Result02Response> request = new HttpEntity<>(resultResponse, headers);
+            HttpEntity<ResultWord2Vec02Response> request = new HttpEntity<>(resultResponse, headers);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
@@ -188,5 +194,45 @@ public class ModelService {
 
             return ResultDetailResponse.builder().result(resultDetailDTOS).build();
         }
+    }
+
+    public ResultDetailResponse getResultGpt(UserInputRequest userInputRequest) throws JsonProcessingException {
+        String uri = BASE_URL + "/result";
+
+        TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
+        assert taskManagement != null;
+        List<Movie> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(
+                taskManagement.getCurrentModel().getDataStartDate(), taskManagement.getCurrentModel().getDataEndDate());
+        List<GptEmb01DTO> vectors = movies.stream()
+                .map(movie -> gptEmb01Repository.findByMovieId(movie.getId()))
+                .map(GptEmb01DTO::fromGptEmb01)
+                .toList();
+        ResultGpt01Response resultResponse = ResultGpt01Response.builder()
+                .input(userInputRequest.getInput())
+                .embeddingVector(vectors)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<ResultGpt01Response> request = new HttpEntity<>(resultResponse, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+
+        String jsonResponse = responseEntity.getBody();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
+        UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
+        for (ResultDTO output : userLogDTO.getOutput()) {
+            movieRepository.findById(output.getMovieId())
+                    .ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
+                            .movie(MovieDTO.fromMovie(movie))
+                            .similarity(output.getSimilarity())
+                            .build()));
+        }
+
+        return ResultDetailResponse.builder().result(resultDetailDTOS).build();
     }
 }

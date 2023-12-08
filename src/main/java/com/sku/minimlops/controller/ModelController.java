@@ -64,7 +64,12 @@ public class ModelController {
 	}
 
 	@PostMapping("/result/word2vec")
-	public DataResponse<ResultDetailResponse> getResult(@RequestBody UserInputRequest userInputRequest) throws JsonProcessingException {
-		return DataResponse.of(modelService.getResultByUserInput(userInputRequest));
+	public DataResponse<ResultDetailResponse> getResultWord2Vec(@RequestBody UserInputRequest userInputRequest) throws JsonProcessingException {
+		return DataResponse.of(modelService.getResultWord2Vec(userInputRequest));
+	}
+
+	@PostMapping("/result/gpt")
+	public DataResponse<ResultDetailResponse> getResultGpt(@RequestBody UserInputRequest userInputRequest) throws JsonProcessingException {
+		return DataResponse.of(modelService.getResultGpt(userInputRequest));
 	}
 }
