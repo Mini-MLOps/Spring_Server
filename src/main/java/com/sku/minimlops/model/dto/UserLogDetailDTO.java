@@ -18,7 +18,7 @@ public class UserLogDetailDTO {
 	private Long id;
 	private String input;
 	private List<ResultDetailDTO> output;
-	private int satisfaction;
+	private Boolean satisfaction;
 	private LocalDateTime requestDate;
 
 	public static UserLogDetailDTO fromUserLog(UserLog userLog) {

@@ -37,8 +37,16 @@ public class UserLog {
 	@OneToMany(mappedBy = "userLog", fetch = FetchType.LAZY)
 	private List<Result> results = new ArrayList<>();
 
-	private int satisfaction;
+	private Boolean satisfaction;
 
 	@CreatedDate
 	private LocalDateTime requestDate;
+
+	public void setGood() {
+		satisfaction = true;
+	}
+
+	public void setBad() {
+		satisfaction = false;
+	}
 }

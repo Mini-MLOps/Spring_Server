@@ -1,6 +1,7 @@
 package com.sku.minimlops.service;
 
 import com.sku.minimlops.model.dto.response.UserLogCountResponse;
+import com.sku.minimlops.model.dto.response.UserLogRatioResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,23 +28,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserLogService {
     private final UserLogRepository userLogRepository;
-    private final ResultRepository resultRepository;
-    private final MovieRepository movieRepository;
-
-    @Transactional
-    public void addUserLog(ResultRequest resultRequest) {
-        UserLog userLog = userLogRepository.save(UserLog.builder().input(resultRequest.getInput()).build());
-
-        for (ResultDTO resultDTO : resultRequest.getOutput()) {
-            Movie movie = movieRepository.findById(resultDTO.getMovieId()).orElse(null);
-            Result result = Result.builder()
-                    .userLog(userLog)
-                    .movie(movie)
-                    .similarity(resultDTO.getSimilarity())
-                    .build();
-            resultRepository.save(result);
-        }
-    }
 
     public UserLogResponse getAllUserLogs(Pageable pageable) {
         Page<UserLog> userLogs = userLogRepository.findAll(pageable);
@@ -63,5 +47,32 @@ public class UserLogService {
                 .totalElements(userLogRepository.countAllBy())
                 .todayElements(userLogRepository.countAllByRequestDateBetween(startOfDay, endOfDay))
                 .build();
+    }
+
+    public UserLogRatioResponse ratioOfUserLogs() {
+        float good = userLogRepository.countAllBySatisfactionIsTrue();
+        float bad = userLogRepository.countAllBySatisfactionIsFalse();
+        float none = userLogRepository.countAllBySatisfactionIsNull();
+        float total = good + bad + none;
+
+        return UserLogRatioResponse.builder()
+                .good(good / total * 100)
+                .bad(bad / total * 100)
+                .none(none / total * 100)
+                .build();
+    }
+
+    @Transactional
+    public void selectGood(Long userLogId) {
+        UserLog userLog = userLogRepository.findById(userLogId).orElse(null);
+        assert userLog != null;
+        userLog.setGood();
+    }
+
+    @Transactional
+    public void selectBad(Long userLogId) {
+        UserLog userLog = userLogRepository.findById(userLogId).orElse(null);
+        assert userLog != null;
+        userLog.setBad();
     }
 }

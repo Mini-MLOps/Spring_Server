@@ -1,9 +1,5 @@
 package com.sku.minimlops.model.dto.response;
 
-import java.util.List;
-
-import com.sku.minimlops.model.dto.ResultDetailDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultDetailResponse {
-	private Long id;
-	private List<ResultDetailDTO> result;
+public class UserLogRatioResponse {
+    private float good;
+    private float bad;
+    private float none;
 }

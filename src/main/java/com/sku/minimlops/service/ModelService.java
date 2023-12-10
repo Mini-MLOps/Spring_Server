@@ -1,29 +1,14 @@
 package com.sku.minimlops.service;
 
-import com.sku.minimlops.model.domain.Movie;
-import com.sku.minimlops.model.dto.GptEmb01DTO;
-import com.sku.minimlops.model.dto.response.flask.ResultGpt01Response;
-import com.sku.minimlops.repository.GptEmb01Repository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sku.minimlops.model.domain.Model;
+import com.sku.minimlops.model.domain.Movie;
+import com.sku.minimlops.model.domain.Result;
 import com.sku.minimlops.model.domain.TableName;
 import com.sku.minimlops.model.domain.TaskManagement;
+import com.sku.minimlops.model.domain.UserLog;
+import com.sku.minimlops.model.dto.GptEmb01DTO;
 import com.sku.minimlops.model.dto.ModelDTO;
 import com.sku.minimlops.model.dto.MovieDTO;
 import com.sku.minimlops.model.dto.ResultDTO;
@@ -37,15 +22,32 @@ import com.sku.minimlops.model.dto.response.ModelListResponse;
 import com.sku.minimlops.model.dto.response.ResultDetailResponse;
 import com.sku.minimlops.model.dto.response.flask.ModelDeployResponse;
 import com.sku.minimlops.model.dto.response.flask.ModelTrainResponse;
+import com.sku.minimlops.model.dto.response.flask.ResultGpt01Response;
 import com.sku.minimlops.model.dto.response.flask.ResultWord2Vec01Response;
 import com.sku.minimlops.model.dto.response.flask.ResultWord2Vec02Response;
+import com.sku.minimlops.repository.GptEmb01Repository;
 import com.sku.minimlops.repository.ModelRepository;
 import com.sku.minimlops.repository.MovieRepository;
+import com.sku.minimlops.repository.ResultRepository;
 import com.sku.minimlops.repository.TaskMangementRepository;
+import com.sku.minimlops.repository.UserLogRepository;
 import com.sku.minimlops.repository.Word2vecEmb01Repository;
 import com.sku.minimlops.repository.Word2vecEmb02Repository;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,6 +61,8 @@ public class ModelService {
     private final Word2vecEmb01Repository word2vecEmb01Repository;
     private final Word2vecEmb02Repository word2vecEmb02Repository;
     private final GptEmb01Repository gptEmb01Repository;
+    private final UserLogRepository userLogRepository;
+    private final ResultRepository resultRepository;
 
     public void trainModel(ModelParameterRequest modelParameterRequest) {
         String uri = BASE_URL + "/train";
@@ -122,7 +126,7 @@ public class ModelService {
     }
 
     public ResultDetailResponse getResultWord2Vec(UserInputRequest userInputRequest) throws JsonProcessingException {
-        String uri = BASE_URL + "/result";
+        String uri = BASE_URL + "/result?id=" + UUID.randomUUID();
 
         TaskManagement taskManagement = taskMangementRepository.findAll().get(0);
         String modelName = taskManagement.getCurrentModel().getName();
@@ -148,8 +152,21 @@ public class ModelService {
             String jsonResponse = responseEntity.getBody();
             ObjectMapper objectMapper = new ObjectMapper();
 
-            List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
             UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
+
+            UserLog userLog = userLogRepository.save(UserLog.builder().input(userLogDTO.getInput()).build());
+
+            for (ResultDTO resultDTO : userLogDTO.getOutput()) {
+                Movie movie = movieRepository.findById(resultDTO.getMovieId()).orElse(null);
+                Result result = Result.builder()
+                        .userLog(userLog)
+                        .movie(movie)
+                        .similarity(resultDTO.getSimilarity())
+                        .build();
+                resultRepository.save(result);
+            }
+
+            List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
             for (ResultDTO output : userLogDTO.getOutput()) {
                 movieRepository.findById(output.getMovieId())
                         .ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
@@ -158,7 +175,10 @@ public class ModelService {
                                 .build()));
             }
 
-            return ResultDetailResponse.builder().result(resultDetailDTOS).build();
+            return ResultDetailResponse.builder()
+                    .id(userLog.getId())
+                    .result(resultDetailDTOS)
+                    .build();
         } else {
             List<Word2vecEmb02DTO> vectors = word2vecEmb02Repository.findAll()
                     .stream()
@@ -181,8 +201,21 @@ public class ModelService {
             String jsonResponse = responseEntity.getBody();
             ObjectMapper objectMapper = new ObjectMapper();
 
-            List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
             UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
+
+            UserLog userLog = userLogRepository.save(UserLog.builder().input(userLogDTO.getInput()).build());
+
+            for (ResultDTO resultDTO : userLogDTO.getOutput()) {
+                Movie movie = movieRepository.findById(resultDTO.getMovieId()).orElse(null);
+                Result result = Result.builder()
+                        .userLog(userLog)
+                        .movie(movie)
+                        .similarity(resultDTO.getSimilarity())
+                        .build();
+                resultRepository.save(result);
+            }
+
+            List<ResultDetailDTO> resultDetailDTOS = new ArrayList<>();
             for (ResultDTO output : userLogDTO.getOutput()) {
                 movieRepository.findById(output.getMovieId())
                         .ifPresent(movie -> resultDetailDTOS.add(ResultDetailDTO.builder()
@@ -191,12 +224,15 @@ public class ModelService {
                                 .build()));
             }
 
-            return ResultDetailResponse.builder().result(resultDetailDTOS).build();
+            return ResultDetailResponse.builder()
+                    .id(userLog.getId())
+                    .result(resultDetailDTOS)
+                    .build();
         }
     }
 
     public ResultDetailResponse getResultGpt(UserInputRequest userInputRequest) throws JsonProcessingException {
-        String uri = BASE_URL + "/result";
+        String uri = BASE_URL + "/result?id=" + UUID.randomUUID();
 
         TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
         assert taskManagement != null;

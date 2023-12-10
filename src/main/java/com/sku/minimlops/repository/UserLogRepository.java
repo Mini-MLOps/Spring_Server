@@ -10,4 +10,10 @@ public interface UserLogRepository extends JpaRepository<UserLog, Long> {
     int countAllBy();
 
     int countAllByRequestDateBetween(LocalDateTime start, LocalDateTime end);
+
+    float countAllBySatisfactionIsTrue();
+
+    float countAllBySatisfactionIsFalse();
+
+    float countAllBySatisfactionIsNull();
 }

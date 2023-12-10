@@ -1,35 +1,30 @@
 package com.sku.minimlops.controller;
 
+import com.sku.minimlops.exception.Code;
+import com.sku.minimlops.exception.dto.DataResponse;
+import com.sku.minimlops.exception.dto.Response;
 import com.sku.minimlops.model.dto.response.UserLogCountResponse;
+import com.sku.minimlops.model.dto.response.UserLogRatioResponse;
+import com.sku.minimlops.model.dto.response.UserLogResponse;
+import com.sku.minimlops.service.UserLogService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.sku.minimlops.exception.Code;
-import com.sku.minimlops.exception.dto.DataResponse;
-import com.sku.minimlops.exception.dto.Response;
-import com.sku.minimlops.model.dto.request.ResultRequest;
-import com.sku.minimlops.model.dto.response.UserLogResponse;
-import com.sku.minimlops.service.UserLogService;
-
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/user-logs")
 @RequiredArgsConstructor
 public class UserLogController {
 	private final UserLogService userLogService;
-
-	@PostMapping
-	public Response handleResultComplete(@RequestBody ResultRequest resultRequest) {
-		userLogService.addUserLog(resultRequest);
-		return Response.of(true, Code.OK);
-	}
 
 	@GetMapping
 	public DataResponse<UserLogResponse> getAllUserLogs(
@@ -40,5 +35,22 @@ public class UserLogController {
 	@GetMapping("/count")
 	public DataResponse<UserLogCountResponse> countUserLogs() {
 		return DataResponse.of(userLogService.countUserLogs());
+	}
+
+	@GetMapping("/ratio")
+	public DataResponse<UserLogRatioResponse> ratioOfUserLogs() {
+		return DataResponse.of(userLogService.ratioOfUserLogs());
+	}
+
+	@PatchMapping("/{userLogId}/good")
+	public Response selectGood(@PathVariable Long userLogId) {
+		userLogService.selectGood(userLogId);
+		return Response.of(true, Code.OK);
+	}
+
+	@PatchMapping("/{userLogId}/bad")
+	public Response selectBad(@PathVariable Long userLogId) {
+		userLogService.selectBad(userLogId);
+		return Response.of(true, Code.OK);
 	}
 }
