@@ -83,7 +83,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String[] excludePath = {"/api/users/login", "/api/users/join", "/api/models/train-complete", "/api/models/deploy-complete", "/api/user-logs"};
+        String[] excludePath = {"/api/users/login", "/api/users/join", "/api/models/train-complete", "/api/models/deploy-complete", "/api/models/result/word2vec", "/api/models/result/gpt", "/api/user-logs"};
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::endsWith);
     }

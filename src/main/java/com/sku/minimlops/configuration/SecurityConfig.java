@@ -34,8 +34,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/users/login", "/api/users/join").permitAll()
-                                .requestMatchers("/api/models/train-complete", "/api/models/deploy-complete").permitAll()
-                                .requestMatchers("/api/user-logs").permitAll()
+                                .requestMatchers("/api/models/train-complete", "/api/models/deploy-complete", "/api/models/result/word2vec", "/api/models/result/gpt").permitAll()
+                                .requestMatchers("/api/user-logs", "/api/user-logs/{userLogId}/good").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(STATELESS))

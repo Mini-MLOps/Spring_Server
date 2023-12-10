@@ -42,15 +42,15 @@ public class UserLogController {
 		return DataResponse.of(userLogService.ratioOfUserLogs());
 	}
 
-	@PatchMapping("/{userLogId}/good")
-	public Response selectGood(@PathVariable Long userLogId) {
-		userLogService.selectGood(userLogId);
+	@PatchMapping("/good")
+	public Response selectGood(@RequestParam Long id) {
+		userLogService.selectGood(id);
 		return Response.of(true, Code.OK);
 	}
 
-	@PatchMapping("/{userLogId}/bad")
-	public Response selectBad(@PathVariable Long userLogId) {
-		userLogService.selectBad(userLogId);
+	@PatchMapping("/bad")
+	public Response selectBad(@RequestParam Long id) {
+		userLogService.selectBad(id);
 		return Response.of(true, Code.OK);
 	}
 }
