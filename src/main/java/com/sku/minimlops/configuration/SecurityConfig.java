@@ -35,7 +35,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/api/users/login", "/api/users/join").permitAll()
                                 .requestMatchers("/api/models/train-complete", "/api/models/deploy-complete", "/api/models/result/word2vec", "/api/models/result/gpt").permitAll()
-                                .requestMatchers("/api/user-logs", "/api/user-logs/{userLogId}/good").permitAll()
+                                .requestMatchers("/api/user-logs", "/api/user-logs/good", "/api/user-logs/bad").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(STATELESS))
