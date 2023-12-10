@@ -125,6 +125,7 @@ public class ModelService {
                 .build();
     }
 
+    @Transactional
     public ResultDetailResponse getResultWord2Vec(UserInputRequest userInputRequest) throws JsonProcessingException {
         String uri = BASE_URL + "/result?id=" + UUID.randomUUID();
 
