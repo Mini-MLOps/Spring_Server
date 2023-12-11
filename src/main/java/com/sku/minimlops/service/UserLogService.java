@@ -33,6 +33,7 @@ public class UserLogService {
         Page<UserLog> userLogs = userLogRepository.findAll(pageable);
         return UserLogResponse.builder()
                 .userLog(userLogs.getContent().stream().map(UserLogDetailDTO::fromUserLog).toList())
+                .totalPages(userLogs.getTotalPages())
                 .totalElements((int) userLogs.getTotalElements())
                 .first(userLogs.isFirst())
                 .last(userLogs.isLast())
