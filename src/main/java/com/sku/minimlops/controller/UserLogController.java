@@ -15,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,13 +43,13 @@ public class UserLogController {
 		return DataResponse.of(userLogService.ratioOfUserLogs());
 	}
 
-	@PatchMapping("/good")
+	@PostMapping("/good")
 	public Response selectGood(@RequestParam Long id) {
 		userLogService.selectGood(id);
 		return Response.of(true, Code.OK);
 	}
 
-	@PatchMapping("/bad")
+	@PostMapping("/bad")
 	public Response selectBad(@RequestParam Long id) {
 		userLogService.selectBad(id);
 		return Response.of(true, Code.OK);
