@@ -56,10 +56,14 @@ public class UserLogService {
         float none = userLogRepository.countAllBySatisfactionIsNull();
         float total = good + bad + none;
 
+        float goodPercentage = (good / total) * 100;
+        float badPercentage = (bad / total) * 100;
+        float nonePercentage = (none / total) * 100;
+
         return UserLogRatioResponse.builder()
-                .good(good / total * 100)
-                .bad(bad / total * 100)
-                .none(none / total * 100)
+                .good(Float.parseFloat(String.format("%.1f", goodPercentage)))
+                .bad(Float.parseFloat(String.format("%.1f", badPercentage)))
+                .none(Float.parseFloat(String.format("%.1f", nonePercentage)))
                 .build();
     }
 
