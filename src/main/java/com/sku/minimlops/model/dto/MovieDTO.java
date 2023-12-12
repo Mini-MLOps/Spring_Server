@@ -18,17 +18,21 @@ public class MovieDTO {
     private String code;
     private String title;
     private String plot;
+    private String summary;
+    private String poster;
     private LocalDate releaseDate;
     private LocalDate collectionDate;
 
     public static MovieDTO fromMovie(Movie movie) {
         return MovieDTO.builder()
-            .id(movie.getId())
-            .code(movie.getCode())
-            .title(movie.getTitle())
-            .plot(movie.getPlot())
-            .releaseDate(movie.getReleaseDate())
-            .collectionDate(movie.getCollectionDate())
-            .build();
+                .id(movie.getId())
+                .code(movie.getCode())
+                .title(movie.getTitle())
+                .plot(movie.getPlot())
+                .summary(movie.getSummary())
+                .poster(movie.getPoster())
+                .releaseDate(movie.getReleaseDate())
+                .collectionDate(movie.getCollectionDate())
+                .build();
     }
 }
