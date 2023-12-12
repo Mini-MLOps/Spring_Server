@@ -155,7 +155,8 @@ public class ModelService {
 
             UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
 
-            UserLog userLog = userLogRepository.save(UserLog.builder().input(userLogDTO.getInput()).build());
+            UserLog userLog = userLogRepository.save(
+                    UserLog.builder().input(userLogDTO.getInput()).model(taskManagement.getCurrentModel()).build());
 
             for (ResultDTO resultDTO : userLogDTO.getOutput()) {
                 Movie movie = movieRepository.findById(resultDTO.getMovieId()).orElse(null);
@@ -204,7 +205,8 @@ public class ModelService {
 
             UserLogDTO userLogDTO = objectMapper.readValue(jsonResponse, UserLogDTO.class);
 
-            UserLog userLog = userLogRepository.save(UserLog.builder().input(userLogDTO.getInput()).build());
+            UserLog userLog = userLogRepository.save(
+                    UserLog.builder().input(userLogDTO.getInput()).model(taskManagement.getCurrentModel()).build());
 
             for (ResultDTO resultDTO : userLogDTO.getOutput()) {
                 Movie movie = movieRepository.findById(resultDTO.getMovieId()).orElse(null);

@@ -14,13 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLogDTO {
-	private String input;
-	private List<ResultDTO> output;
+    private String input;
+    private List<ResultDTO> output;
+    private Long modelId;
 
-	public static UserLogDTO fromUserLog(UserLog userLog) {
-		return UserLogDTO.builder()
-			.input(userLog.getInput())
-			.output(userLog.getResults().stream().map(ResultDTO::fromResult).toList())
-			.build();
-	}
+    public static UserLogDTO fromUserLog(UserLog userLog) {
+        return UserLogDTO.builder()
+                .input(userLog.getInput())
+                .output(userLog.getResults().stream().map(ResultDTO::fromResult).toList())
+                .modelId(userLog.getModel().getId())
+                .build();
+    }
 }

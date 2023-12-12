@@ -15,19 +15,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLogDetailDTO {
-	private Long id;
-	private String input;
-	private List<ResultDetailDTO> output;
-	private Boolean satisfaction;
-	private LocalDateTime requestDate;
+    private Long id;
+    private Long modelId;
+    private String input;
+    private List<ResultDetailDTO> output;
+    private Boolean satisfaction;
+    private LocalDateTime requestDate;
 
-	public static UserLogDetailDTO fromUserLog(UserLog userLog) {
-		return UserLogDetailDTO.builder()
-			.id(userLog.getId())
-			.input(userLog.getInput())
-			.output(userLog.getResults().stream().map(ResultDetailDTO::fromResult).toList())
-			.satisfaction(userLog.getSatisfaction())
-			.requestDate(userLog.getRequestDate())
-			.build();
-	}
+    public static UserLogDetailDTO fromUserLog(UserLog userLog) {
+        return UserLogDetailDTO.builder()
+                .id(userLog.getId())
+                .modelId(userLog.getModel().getId())
+                .input(userLog.getInput())
+                .output(userLog.getResults().stream().map(ResultDetailDTO::fromResult).toList())
+                .satisfaction(userLog.getSatisfaction())
+                .requestDate(userLog.getRequestDate())
+                .build();
+    }
 }

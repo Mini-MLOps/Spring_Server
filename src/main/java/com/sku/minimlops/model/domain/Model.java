@@ -54,4 +54,7 @@ public class Model {
 
     @CreatedDate
     private LocalDateTime creationDate;
+
+    @OneToMany(mappedBy = "model", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserLog> userLogs = new ArrayList<>();
 }
