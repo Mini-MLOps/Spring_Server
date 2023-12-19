@@ -239,10 +239,15 @@ public class ModelService {
 
         TaskManagement taskManagement = taskMangementRepository.findById(1L).orElse(null);
         assert taskManagement != null;
-        List<Movie> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(
-                taskManagement.getCurrentModel().getDataStartDate(), taskManagement.getCurrentModel().getDataEndDate());
-        List<GptEmb01DTO> vectors = movies.stream()
-                .map(movie -> gptEmb01Repository.findByMovieId(movie.getId()))
+        // 현재 배포 중인 모델의 기간
+//        List<Movie> movies = movieRepository.findByReleaseDateBetweenOrderByReleaseDateDesc(
+//                taskManagement.getCurrentModel().getDataStartDate(), taskManagement.getCurrentModel().getDataEndDate());
+//        List<GptEmb01DTO> vectors = movies.stream()
+//                .map(movie -> gptEmb01Repository.findByMovieId(movie.getId()))
+//                .map(GptEmb01DTO::fromGptEmb01)
+//                .toList();
+        // 전체 기간
+        List<GptEmb01DTO> vectors = gptEmb01Repository.findAll().stream()
                 .map(GptEmb01DTO::fromGptEmb01)
                 .toList();
         ResultGpt01Response resultResponse = ResultGpt01Response.builder()
